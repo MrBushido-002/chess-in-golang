@@ -29,3 +29,17 @@ func TestBoardToFEN(t *testing.T) {
     }
     fmt.Println("BoardToFEN test passed!")
 }
+
+func TestCheckValidation(t *testing.T) {
+    // set up a board where white king is in check
+    board := FENParser("8/8/8/8/4r3/8/8/4K3 w - - 0 1")
+    
+    // try a move that keeps king in check
+    move := Move{
+        Start: Square{Rank: 7, File: 4},
+        End:   Square{Rank: 6, File: 4},
+    }
+    if IsValidMove(board, move, White) {
+        t.Fatal("expected invalid move - king would remain in check")
+    }
+}

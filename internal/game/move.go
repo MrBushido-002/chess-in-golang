@@ -9,7 +9,7 @@ type Move struct {
 	End Square
 }
 
-func IsValidMove(board Board, move Move, color Color) bool {
+func isValidPieceMove(board Board, move Move, color Color) bool {
 	piece := board.Squares[move.Start.Rank][move.Start.File]
 	if piece == nil {
 		return false
@@ -203,4 +203,15 @@ func isValidPawnMove(board Board, move Move, color Color) bool {
 		}
 
 	}
+	return false
+}
+
+func IsValidMove(board Board, move Move, color Color) bool {
+    if !isValidPieceMove(board, move, color) {
+        return false
+    }
+    if CheckValidation(board, move, color) {
+        return false
+    }
+    return true
 }

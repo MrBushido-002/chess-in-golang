@@ -5,6 +5,6 @@ import(
 )
 
 type Square struct {
-	rank int // a-h
-	file int  // 1-8
+	Rank int // a-h
+	File int  // 1-8
 }
