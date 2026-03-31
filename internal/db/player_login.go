@@ -5,15 +5,16 @@ import(
 	"golang.org/x/crypto/bcrypt"
 	"fmt"
 	"time"
-	"github.com/jackc/pgx/v5"
 	"context"
 	"os"
 	"github.com/MrBushido-002/chess-in-golang/internal/auth"
+	"database/sql"
+
+	
 )
 
-func PlayerLogin(conn *pgx.Conn, username string, password string) (string, error) {
+func PlayerLogin(conn *sql.DB, username string, password string) (string, error) {
 	secretKey := os.Getenv("SECRET_KEY")
-
 	queries := New(conn)
 	expiresIn := 12 * time.Hour
 	
@@ -31,5 +32,6 @@ func PlayerLogin(conn *pgx.Conn, username string, password string) (string, erro
 	if err != nil {
 		return "", err
 	}
+	
 	return tokenString, nil
 }

@@ -3,11 +3,11 @@ package db
 import(
 	
 	"golang.org/x/crypto/bcrypt"
-	"github.com/jackc/pgx/v5"
 	"context"
+	"database/sql"
 )
 
-func RegisterPlayer(conn *pgx.Conn, username string, password string) (CreatePlayerRow, error) {
+func RegisterPlayer(conn *sql.DB, username string, password string) (CreatePlayerRow, error) {
 	queries := New(conn)
 	
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)

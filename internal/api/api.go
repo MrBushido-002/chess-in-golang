@@ -1,8 +1,8 @@
 package api
 
-import "github.com/jackc/pgx/v5"
+import "database/sql"
 
 type APIConfig struct {
-	DB *pgx.Conn
+	DB *sql.DB
 	JWTSecret string
 }

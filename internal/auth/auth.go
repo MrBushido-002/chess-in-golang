@@ -4,6 +4,10 @@ import(
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"time"
+    "net/http"
+    "errors"
+    "strings"
+    "fmt"
 )
 
 
@@ -52,11 +56,13 @@ func AuthenticateRequest(r *http.Request, secret string) (uuid.UUID, error) {
 
 	token, err := GetBearerToken(r.Header)
 	if err != nil {
+        fmt.Println("GetBearerToken error:", err)
 		return uuid.Nil, err
 	}
 
 	id, err := ValidateJWT(token, secret)
 	if err != nil {
+        fmt.Println("ValidateJWT error:", err)
 		return uuid.Nil, err
 	}
 	return id, nil

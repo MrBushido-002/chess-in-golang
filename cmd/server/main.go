@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"log"
 	"os"
-	"context"
-
 	"github.com/MrBushido-002/chess-in-golang/internal/api"
 	"github.com/MrBushido-002/chess-in-golang/internal/db"
 	"github.com/joho/godotenv"
@@ -21,20 +19,24 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer conn.Close(context.Background())
+	defer conn.Close()
 
 	cfg := api.APIConfig{
 		DB: conn,
-		JWTSecret: os.Getenv("JWT_SECRET"),
+		JWTSecret: os.Getenv("SECRET_KEY"),
 	}
 
 	fmt.Println("Database connected successfully!")
 	
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /games", api.HandleGetGames)
 	mux.HandleFunc("POST /players/register", cfg.HandleRegisterPlayer)
 	mux.HandleFunc("POST /players/login", cfg.HandlePlayerLogin)
+	mux.HandleFunc("POST /games/", cfg.HandleCreateGame)
+	mux.HandleFunc("POST /games/{id}/join", cfg.HandleJoinGame)
+	mux.HandleFunc("POST /games/{id}/moves", cfg.HandelMakeMove)
+	mux.HandleFunc("GET /games/{id}", cfg.HandleGetGames)
+
 
 	server := &http.Server{
 		Addr: ":2209",

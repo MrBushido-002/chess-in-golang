@@ -44,6 +44,32 @@ func isValidKingMove(board Board, move Move, color Color) bool {
 	if board.Squares[move.End.Rank][move.End.File] != nil && board.Squares[move.End.Rank][move.End.File].Color == color {
 		return false
 	}
+	if color == White {
+		if move.Start == (Square{Rank: 7, File: 4}) && move.End == (Square{Rank: 7, File: 6}) {
+			return board.CastlingRights.WhiteKingSide &&
+			board.Squares[7][5] == nil &&
+        	board.Squares[7][6] == nil
+		}
+		if move.Start == (Square{Rank: 7, File: 4}) && move.End == (Square{Rank: 7, File: 2}) {
+			return board.CastlingRights.WhiteQueenSide &&
+			board.Squares[7][1] == nil &&
+        	board.Squares[7][2] == nil &&
+			board.Squares[7][3] == nil
+		}
+	}
+	if color == Black {
+		if move.Start == (Square{Rank: 0, File: 4}) && move.End == (Square{Rank: 0, File: 6}) {
+			return board.CastlingRights.BlackKingSide &&
+			board.Squares[0][5] == nil &&
+			board.Squares[0][6] == nil
+		}
+		if move.Start == (Square{Rank: 0, File: 4}) && move.End == (Square{Rank: 0, File: 2}) {
+			return board.CastlingRights.BlackQueenSide &&
+			board.Squares[0][1] == nil &&
+			board.Squares[0][2] == nil &&
+			board.Squares[0][3] == nil
+		}
+	}
 	return math.Abs(float64(move.Start.Rank - move.End.Rank)) <= 1 && math.Abs(float64(move.Start.File - move.End.File)) <= 1
 }
 
@@ -170,6 +196,10 @@ func isValidPawnMove(board Board, move Move, color Color) bool {
 		forwardOne := move.Start.Rank - 1
 		forwardTwo := move.Start.Rank - 2
 
+		if board.EnPassant != nil && move.End == *board.EnPassant {
+			return move.End.Rank == forwardOne && (move.End.File == move.Start.File+1 || move.End.File == move.Start.File-1)
+		}
+
 		if move.End.Rank == forwardOne && move.End.File == move.Start.File {
 			return board.Squares[forwardOne][move.Start.File] == nil
 		}
@@ -183,11 +213,14 @@ func isValidPawnMove(board Board, move Move, color Color) bool {
 			return move.End.Rank == forwardOne && (move.End.File == move.Start.File + 1 || move.End.File == move.Start.File - 1)
 		}
 	}
-	return false
 
 	if color == Black {
 		forwardOne := move.Start.Rank + 1
 		forwardTwo := move.Start.Rank + 2
+
+		if board.EnPassant != nil && move.End == *board.EnPassant {
+			return move.End.Rank == forwardOne && (move.End.File == move.Start.File+1 || move.End.File == move.Start.File-1)
+		}
 
 		if move.End.Rank == forwardOne && move.End.File == move.Start.File {
 			return board.Squares[forwardOne][move.Start.File] == nil
@@ -208,10 +241,10 @@ func isValidPawnMove(board Board, move Move, color Color) bool {
 
 func IsValidMove(board Board, move Move, color Color) bool {
     if !isValidPieceMove(board, move, color) {
-        return false
+		return false
     }
     if CheckValidation(board, move, color) {
-        return false
+		return false
     }
     return true
 }

@@ -7,9 +7,9 @@ package db
 import (
 	"database/sql/driver"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type GameStatus string
@@ -99,12 +99,12 @@ func (ns NullPlayerColor) Value() (driver.Value, error) {
 
 type Game struct {
 	GameID        uuid.UUID
-	WhitePlayerID pgtype.UUID
-	BlackPlayerID pgtype.UUID
+	WhitePlayerID uuid.NullUUID
+	BlackPlayerID uuid.NullUUID
 	Status        GameStatus
 	Turn          PlayerColor
 	BoardState    string
-	CreatedAt     pgtype.Timestamp
+	CreatedAt     time.Time
 }
 
 type Move struct {

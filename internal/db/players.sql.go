@@ -32,7 +32,7 @@ type CreatePlayerRow struct {
 }
 
 func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) (CreatePlayerRow, error) {
-	row := q.db.QueryRow(ctx, createPlayer, arg.Username, arg.HashedPassword)
+	row := q.db.QueryRowContext(ctx, createPlayer, arg.Username, arg.HashedPassword)
 	var i CreatePlayerRow
 	err := row.Scan(&i.ID, &i.Username)
 	return i, err
@@ -48,7 +48,7 @@ type GetUserInfoRow struct {
 }
 
 func (q *Queries) GetUserInfo(ctx context.Context, username string) (GetUserInfoRow, error) {
-	row := q.db.QueryRow(ctx, getUserInfo, username)
+	row := q.db.QueryRowContext(ctx, getUserInfo, username)
 	var i GetUserInfoRow
 	err := row.Scan(&i.ID, &i.HashedPassword)
 	return i, err
