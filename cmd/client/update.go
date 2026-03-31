@@ -164,12 +164,24 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.moveInput.SetValue("")
 				return m, fetchGameCmd(m.token, m.gameID)
 			}
+		case StateGameOver:
+			switch msg.String() {
+			case "ctrl+c":
+				return m, tea.Quit
+			case "esc":
+				m.state = StateMainMenu
+				return m, nil
+			}
+			
 		}
 	case GameState:
 		m.gameState = msg
 		if m.state == StateGameLobby && msg.Status == "active" {
 			m.state = StateGame
 			m.moveInput.Focus()
+		}
+		if m.state == StateGame && msg.Status == "complete" {
+        	m.state = StateGameOver
 		}
 		if m.state == StateGameLobby {
 			return m, pollGameCmd(m.token, m.gameID)

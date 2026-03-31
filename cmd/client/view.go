@@ -40,6 +40,9 @@ func (m Model) View() string {
 	case StateJoinGame:
     	return fmt.Sprintf("Join Game\n\n%s\n\n%s\n\nPress Enter to join", m.gameIDInput.View(), m.err)
 
+	case StateGameOver:
+    	return fmt.Sprintf("Game Over!\n\nFinal Board:\n\n%s\n\nPress Esc to return to main menu", renderBoard(m.gameState.BoardState))
+
 	}
 
 	return ""

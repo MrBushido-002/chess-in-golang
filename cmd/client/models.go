@@ -18,6 +18,7 @@ const (
 	StateJoinGame
 	StateGameLobby
 	StateGame
+    StateGameOver
 
 )
 
