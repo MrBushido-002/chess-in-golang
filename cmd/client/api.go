@@ -202,3 +202,71 @@ func MakeMove(token string, gameID, moveStr string) error {
 	return nil
 
 }
+
+type MoveRecord struct {
+	MoveID int `json:"move_id"`
+	GameID string `json:"game_id"`
+	Move string `json:"move"`
+	Color string `json:"color"`
+}
+
+func GetMoves(token string, gameID string) ([]MoveRecord, error) {
+	var moves []MoveRecord
+	
+	url := fmt.Sprintf("http://localhost:2209/games/%s/moves", gameID)
+
+
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer " + token)
+	client := &http.Client{}
+
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	} 
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("could not fetch game: %s", res.Status)
+	}
+
+	decoder := json.NewDecoder(res.Body)
+	err = decoder.Decode(&moves)
+	if err != nil {
+		return nil, err
+	}
+
+	return moves, nil
+}
+
+func GetReplay(token string, gameID string) ([]string, error) {
+    url := fmt.Sprintf("http://localhost:2209/games/%s/replay", gameID)
+    
+    req, err := http.NewRequest("GET", url, nil)
+    if err != nil {
+        return nil, err
+    }
+    req.Header.Set("Authorization", "Bearer " + token)
+    
+    client := &http.Client{}
+    res, err := client.Do(req)
+    if err != nil {
+        return nil, err
+    }
+    
+    if res.StatusCode != http.StatusOK {
+        return nil, fmt.Errorf("could not fetch replay: %s", res.Status)
+    }
+    
+    var fenStrings []string
+    decoder := json.NewDecoder(res.Body)
+    err = decoder.Decode(&fenStrings)
+    if err != nil {
+        return nil, err
+    }
+    return fenStrings, nil
+}

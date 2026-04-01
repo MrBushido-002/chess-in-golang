@@ -19,6 +19,8 @@ const (
 	StateGameLobby
 	StateGame
     StateGameOver
+    StateFindReplay
+    StateReplayGame
 
 )
 
@@ -34,6 +36,9 @@ type Model struct {
 	gameState GameState
 	gameIDInput textinput.Model
 	moveInput textinput.Model
+    moves []MoveRecord
+    replayIndex int
+    replayFENs []string
 }
 
 type item string
@@ -71,7 +76,7 @@ func mainMenuList() list.Model {
     items := []list.Item{
         item("Create Game"),
         item("Join Game"),
-        item("View Games"),
+        item("View Replay"),
     }
     l := list.New(items, list.NewDefaultDelegate(), 30, 30)
     l.Title = "Main Menu"

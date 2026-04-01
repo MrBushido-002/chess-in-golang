@@ -43,7 +43,17 @@ func (m Model) View() string {
 	case StateGameOver:
     	return fmt.Sprintf("Game Over!\n\nFinal Board:\n\n%s\n\nPress Esc to return to main menu", renderBoard(m.gameState.BoardState))
 
-	}
+	
+	case StateFindReplay:
+    	return fmt.Sprintf("Enter Game ID to replay:\n\n%s\n\n%s\n\nPress Enter to load", m.gameIDInput.View(), m.err)
 
+	case StateReplayGame:
+		return fmt.Sprintf(
+			"Replay - Move %d/%d\n\n%s\n\n← → to navigate, Esc to exit",
+			m.replayIndex+1,
+			len(m.replayFENs),
+			renderBoard(m.replayFENs[m.replayIndex]),
+		)
+	}
 	return ""
 }

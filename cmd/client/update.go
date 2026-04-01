@@ -3,6 +3,7 @@ package main
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"time"
+	"fmt"
 )
 
 func (m Model) Init() tea.Cmd {
@@ -112,8 +113,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				case "Join Game":
 					m.gameIDInput.Focus()
 					m.state = StateJoinGame
-				case "View Game":
-					m.state = StateGame
+				case "View Replay":
+					fmt.Println("Switching to StateFindReplay")
+					m.gameIDInput.SetValue("")
+					m.gameIDInput.Focus()
+					m.state = StateFindReplay
 				}
 				return m, nil
 			}
@@ -172,8 +176,46 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.state = StateMainMenu
 				return m, nil
 			}
-			
+		case StateFindReplay:
+			switch msg.String() {
+			case "ctrl+c":
+				return m, tea.Quit
+			case "esc":
+				m.state = StateMainMenu
+				return m, nil
+			case "enter":
+				FENs, err := GetReplay(m.token, m.gameIDInput.Value())
+				if err != nil {
+					m.err = err.Error()
+					return m, nil
+				}
+				m.replayFENs = FENs
+				m.replayIndex = 0
+				m.state = StateReplayGame
+				return m, nil
+			}
+		case StateReplayGame:
+			switch msg.String() {
+			case "ctrl+c":
+				return m, tea.Quit
+			case "esc":
+				m.state = StateMainMenu
+				m.replayFENs = nil
+        		m.replayIndex = 0
+				return m, nil
+			case "right":
+				if m.replayIndex < len(m.replayFENs)-1 {
+					m.replayIndex++
+				}
+				return m, nil
+			case "left":
+				if m.replayIndex > 0 {
+					m.replayIndex--
+				}
+				return m, nil
+			}	
 		}
+
 	case GameState:
 		m.gameState = msg
 		if m.state == StateGameLobby && msg.Status == "active" {
@@ -202,6 +244,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.gameIDInput, cmd = m.gameIDInput.Update(msg)
 	case StateGame:
 		m.moveInput, cmd = m.moveInput.Update(msg)
+	case StateFindReplay:
+    	m.gameIDInput, cmd = m.gameIDInput.Update(msg)
 	}
 	return m, cmd
 }

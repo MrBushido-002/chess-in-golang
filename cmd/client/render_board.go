@@ -7,8 +7,8 @@ import (
 
 func renderBoard(boardState string) string {
 	var pieceSymbols = map[rune]string{
-		'K': "♔", 'Q': "♕", 'R': "♖", 'B': "♗", 'N': "♘", 'P': "♙",
-		'k': "♚", 'q': "♛", 'r': "♜", 'b': "♝", 'n': "♞", 'p': "♟",
+		'k': "♔", 'q': "♕", 'r': "♖", 'b': "♗", 'n': "♘", 'p': "♙",
+		'K': "♚", 'Q': "♛", 'R': "♜", 'B': "♝", 'N': "♞", 'P': "♟",
 	}
 	parts := strings.Split(boardState, " ")
     ranks := strings.Split(parts[0], "/")

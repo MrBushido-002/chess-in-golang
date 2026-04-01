@@ -86,16 +86,6 @@ func (cfg *APIConfig) HandelMakeMove(w http.ResponseWriter, r *http.Request) {
 
 	new_board := game.HypotheticalMove(game.FENParser(gameData.BoardState), move)
 
-	if game.IsCheckMate(new_board, opponent_color) == true {
-		queries.UpdateGameStatus(context.Background(), db.UpdateGameStatusParams{
-			Status: db.GameStatusComplete,
-			GameID:     game_id,
-		})
-    w.WriteHeader(http.StatusOK)
-    w.Write([]byte("Checkmate!"))
-    return
-	}
-
 	new_game_data := game.BoardToFEN(new_board)
 
 	var nextTurn db.PlayerColor
@@ -127,6 +117,36 @@ func (cfg *APIConfig) HandelMakeMove(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("invalid move"))
 		return
 	}
+	if game.IsCheckMate(new_board, opponent_color) == true {
+		queries.UpdateGameStatus(context.Background(), db.UpdateGameStatusParams{
+			Status: db.GameStatusComplete,
+			GameID:     game_id,
+		})
+    w.WriteHeader(http.StatusOK)
+    w.Write([]byte("Checkmate!"))
+    return
+	}
+	
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(new_game_data)
+}
+
+func (cfg *APIConfig) HandelGetMoves(w http.ResponseWriter, r *http.Request) {
+	queries := db.New(cfg.DB)
+
+	game_id, err := uuid.Parse(r.PathValue("id"))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Invalid game ID"))
+		return
+	}
+
+	moves, err := queries.GetMoves(context.Background(), game_id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("could not fetch moves"))
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(moves)
 }

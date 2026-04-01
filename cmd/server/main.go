@@ -36,6 +36,8 @@ func main() {
 	mux.HandleFunc("POST /games/{id}/join", cfg.HandleJoinGame)
 	mux.HandleFunc("POST /games/{id}/moves", cfg.HandelMakeMove)
 	mux.HandleFunc("GET /games/{id}", cfg.HandleGetGames)
+	mux.HandleFunc("GET /games/{id}/moves", cfg.HandelGetMoves)
+	mux.HandleFunc("GET /games/{id}/replay", cfg.HandleGetReplay)
 
 
 	server := &http.Server{
