@@ -5,7 +5,19 @@ import(
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"os"
 )
+
+var serverURL = GetServerURL()
+
+func GetServerURL() string {
+	url := os.Getenv("CHESS_SERVER_URL")
+	if url == "" {
+		return "http://localhost:2209"
+	}
+	return url
+}
+
 type LoginCredentials struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -18,7 +30,8 @@ func LoginUser(username string, password string) (string, error) {
 		return "", err
 	}
 
-	res, err := http.Post("http://localhost:2209/players/login", "application/json", bytes.NewBuffer(data))
+	url := fmt.Sprint("$s/players/login", serverURL)
+	res, err := http.Post(url, "application/json", bytes.NewBuffer(data))
 	if err != nil {
 		return "", err
 	}
@@ -40,7 +53,8 @@ func RegisterUser(username string, password string) error {
 		return err
 	}
 
-	res, err := http.Post("http://localhost:2209/players/register", "application/json", bytes.NewBuffer(data))
+	url := fmt.Sprintf("%s/players/register", serverURL)
+	res, err := http.Post(url, "application/json", bytes.NewBuffer(data))
 	if err != nil {
 		return err
 	}
@@ -56,7 +70,8 @@ func CreateGame(token string) (string, error) {
 		GameID string `json:"GameID"`
 	}
 	
-	req, err := http.NewRequest("POST", "http://localhost:2209/games/", nil)
+	url := fmt.Sprintf("%s/games/", serverURL)
+	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return "", err
 	}
@@ -85,7 +100,8 @@ func JoinGame(token string, gameID string) (string, error) {
 		GameID string `json:"GameID"`
 	}
 	
-	url := fmt.Sprintf("http://localhost:2209/games/%s/join", gameID)
+	
+	url := fmt.Sprintf("%s/games/%s/join", serverURL, gameID)
 	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return "", err
@@ -122,7 +138,7 @@ type GameState struct {
 
 func GetGame(token string, gameID string) (GameState, error) {
 	var gamestate GameState
-	url := fmt.Sprintf("http://localhost:2209/games/%s", gameID)
+	url := fmt.Sprintf("%s/games/%s", serverURL, gameID)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -180,7 +196,7 @@ func MakeMove(token string, gameID, moveStr string) error {
 	}
 	
 	
-	url := fmt.Sprintf("http://localhost:2209/games/%s/moves", gameID)
+	url := fmt.Sprintf("%s/games/%s/moves", serverURL, gameID)
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(data))
 	if err != nil {
@@ -196,7 +212,7 @@ func MakeMove(token string, gameID, moveStr string) error {
 	}
 
 	if res.StatusCode != http.StatusOK {
-		return fmt.Errorf("could not make move: %s", res.Status)
+		return fmt.Errorf("Invalid move")
 	}
 
 	return nil
@@ -213,7 +229,7 @@ type MoveRecord struct {
 func GetMoves(token string, gameID string) ([]MoveRecord, error) {
 	var moves []MoveRecord
 	
-	url := fmt.Sprintf("http://localhost:2209/games/%s/moves", gameID)
+	url := fmt.Sprintf("%s/games/%s/moves", serverURL, gameID)
 
 
 
@@ -244,7 +260,7 @@ func GetMoves(token string, gameID string) ([]MoveRecord, error) {
 }
 
 func GetReplay(token string, gameID string) ([]string, error) {
-    url := fmt.Sprintf("http://localhost:2209/games/%s/replay", gameID)
+    url := fmt.Sprintf("%s/games/%s/replay", serverURL, gameID)
     
     req, err := http.NewRequest("GET", url, nil)
     if err != nil {

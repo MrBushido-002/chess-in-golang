@@ -166,6 +166,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return m, nil
 				}
 				m.moveInput.SetValue("")
+				m.err = ""
 				return m, fetchGameCmd(m.token, m.gameID)
 			}
 		case StateGameOver:

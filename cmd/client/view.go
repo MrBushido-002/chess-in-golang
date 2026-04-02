@@ -30,10 +30,11 @@ func (m Model) View() string {
 	
 	case StateGame:
 		return fmt.Sprintf(
-			"Game ID: %s\nTurn: %s\n\n%s\n\nEnter move (e.g. e2e4): %s\nPress Esc to go back",
+			"Game ID: %s\nTurn: %s\n%s\n%s\n\nEnter move (e.g. e2e4): %s\nPress Esc to go back",
 			m.gameID,
 			m.gameState.Turn,
 			renderBoard(m.gameState.BoardState),
+			m.err,
 			m.moveInput.View(),
 		)
 	

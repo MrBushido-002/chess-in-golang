@@ -73,11 +73,7 @@ func (cfg *APIConfig) HandelMakeMove(w http.ResponseWriter, r *http.Request) {
 	move := game.Move{Start: req.Start, End: req.End}
 	move_string := fmt.Sprintf("%v %v", move.Start, move.End)
 
-	fmt.Println("Board state from DB:", gameData.BoardState)
-	fmt.Println("Move:", move)
-	fmt.Println("Player color:", player_color)
 
-	fmt.Printf("Attempting move: board=%s, move=%v, color=%s\n", gameData.BoardState, move, player_color)
 	if game.IsValidMove(game.FENParser(gameData.BoardState), move, player_color) != true {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("invalid move"))

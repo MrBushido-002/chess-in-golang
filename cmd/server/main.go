@@ -14,6 +14,13 @@ import (
 func main() {
 	godotenv.Load()
 	
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "2209"
+	}
+	fmt.Println("Server starting on port", port)
+	log.Fatal(http.ListenAndServe(":"+port, mux))
+
 	dbURL := os.Getenv("DB_URL")
     conn, err := db.NewConnection(dbURL)
 	if err != nil {
