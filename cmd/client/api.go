@@ -13,7 +13,7 @@ var serverURL = GetServerURL()
 func GetServerURL() string {
 	url := os.Getenv("CHESS_SERVER_URL")
 	if url == "" {
-		return "http://localhost:2209"
+		return "https://chess-in-golang-production.up.railway.app"
 	}
 	return url
 }
@@ -30,7 +30,7 @@ func LoginUser(username string, password string) (string, error) {
 		return "", err
 	}
 
-	url := fmt.Sprint("$s/players/login", serverURL)
+	url := fmt.Sprintf("%s/players/login", serverURL)
 	res, err := http.Post(url, "application/json", bytes.NewBuffer(data))
 	if err != nil {
 		return "", err
@@ -70,7 +70,7 @@ func CreateGame(token string) (string, error) {
 		GameID string `json:"GameID"`
 	}
 	
-	url := fmt.Sprintf("%s/games/", serverURL)
+	url := fmt.Sprintf("%s/games", serverURL)
 	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return "", err
@@ -82,6 +82,8 @@ func CreateGame(token string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	fmt.Println("CreateGame status:", res.StatusCode)
+	fmt.Println("CreateGame URL:", url)
 
 	if res.StatusCode != http.StatusCreated {
 		return "", fmt.Errorf("game creation failed: %s", res.Status)
